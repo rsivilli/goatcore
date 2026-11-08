@@ -744,18 +744,17 @@ tests:
   # suite is for.
   - id: onboard-runner-knows-this-goatnet
     aspect: onboarding/goat-cli-config
-    probe: cmd-assert
+    probe: onboard-runner-profile
     applies_when: onboard_runner_enabled
-    params: {host: "{{ orin_a }}", cmd: "docker exec onboard-runner sh -c 'strings /usr/local/bin/goat | grep -c \"{{ site_id }}\"' || echo 0", expect_min: 1}
+    params: {host: "{{ orin_a }}", goatnet: "{{ site_id }}"}
     requires: [onboard-runner]
     severity: gate
     caught_would_have: >-
-      F-485 wall 1 + wall 2 — goat-cli hardcodes per-goatnet endpoints in three
-      match arms, so a goatnet stood up after those arms were last edited is
-      invisible to the onboarder and every mint refuses. Asserting against the
-      binary the CONTAINER sees also catches wall 2: the runner bind-mounts the
-      host binary, so replacing that file leaves the container on the old inode
-      until something restarts it.
+      A stock goat binary can onboard a new goatnet from its profile alone.
+      Check the default profile written inside the running container, including
+      the router, NetBird and Ory settings, without printing values or tokens.
+      Missing configuration fails; an unreachable container is UNKNOWN.
+      Binary freshness remains the onboard-runner role's version/restart check.
   - id: onboard-runner-reaches-mgmt-api
     aspect: onboarding/runner-reachability
     probe: cmd-assert

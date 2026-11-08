@@ -272,3 +272,18 @@ proves function after each deploy — a no-AI operator then needs judgment only 
 goes red, and the row's `caught_would_have` text tells them what it means. The cold-read
 drill's success criterion becomes mechanical: all applicable rows green, zero operator
 improvisation.
+
+## Runner configuration gate
+
+Status: built. `onboard-runner-knows-this-goatnet` reads the default profile
+materialized by the onboard-runner entrypoint inside the running container.
+It requires the portal, router, NetBird URL/token-environment-name/group-prefix,
+and Ory URL/SSH-host/SSH-user settings. A profile naming another goatnet fails;
+the entrypoint's unnamed profile is valid for its configured goatnet. Missing
+or unreadable profile settings fail. Container/transport failures are UNKNOWN.
+The probe follows goat-cli's flat profile-field reader and emits field names
+only, never values or token contents. This proves configuration presence, not
+credential validity or a successful mint; reachability and onboarding checks
+remain separate. The role retains the binary version and container-restart checks.
+
+Regression tests: `python3 -m unittest discover -s tests -p test_onboard_runner_profile.py`.
